@@ -4,4 +4,9 @@ target/*
 build/*
 *.class
 
-*/.idea/*
+.idea
+
+*.iml
+*.jar
+
+.mvn
