@@ -22,6 +22,7 @@ Restrict apis with role-based authentication
 Permission based actions
 - can be done in Config class. done here using annotations on controllers.
 - see commented `antMatchers` in `Config` class
+- To enable via annotations, Add `@EnableGlobalMethodSecurity` in `Config` class, and see `@PreAuthorize` in `StudentManagementController`
 
 
 Reference
