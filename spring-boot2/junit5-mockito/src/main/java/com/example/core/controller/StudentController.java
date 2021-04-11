@@ -27,7 +27,7 @@ public class StudentController {
   @GetMapping("{id}")
   public Student student(@PathVariable Long id) {
     return students.stream()
-            .filter(student -> student.getId() == id)
+            .filter(student -> student.getId().equals(id))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("Invalid userId: " + id));
   }

@@ -7,7 +7,7 @@ Spring Security
 Basic Authentication
 - username and password are sent as base64 encoded.
 - works with spring version 2.4.4 (did not work with 2.1.0)
-- see `Config` class
+- see `httpBasic` in ``Config` class
 
 Allowing resources
 - see `Config` class
@@ -24,6 +24,15 @@ Permission based actions
 - see commented `antMatchers` in `Config` class
 - To enable via annotations, Add `@EnableGlobalMethodSecurity` in `Config` class, and see `@PreAuthorize` in `StudentManagementController`
 
+CSRF
+- requests will be forbidden by default
+
+Form-based authentication
+- see `formLogin` in `Config` class
+- change from default login page: `loginPage` in Config class
+    - add thymeleaf dependency, `TemplateController`, `login_form.html`
+    - default successUrl in `Config` class
+    
 
 Reference
 - https://www.youtube.com/watch?v=her_7pa0vrg

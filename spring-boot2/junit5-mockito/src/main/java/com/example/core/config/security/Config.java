@@ -1,4 +1,4 @@
-package com.example.core.security;
+package com.example.core.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -57,10 +57,14 @@ public class Config extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.csrf()
+    http
+            .csrf()
             .disable()
+//            .csrf()
+//              .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
             .authorizeRequests()
-            .antMatchers("/", "index", "/css/*", "/js/*").permitAll()
+            .antMatchers("/")
+            .permitAll()
             .antMatchers("/api/**").hasRole(STUDENT.name())
 //            .antMatchers(HttpMethod.DELETE, "/management/api/**").hasAuthority(Permissions.COURSE_WRITE.getPermission())
 //            .antMatchers(HttpMethod.PUT, "/management/api/**").hasAuthority(Permissions.COURSE_WRITE.getPermission())
@@ -69,6 +73,10 @@ public class Config extends WebSecurityConfigurerAdapter {
             .anyRequest()
             .authenticated()
             .and()
-            .httpBasic();
+//            .httpBasic();
+            .formLogin()
+            .loginPage("/login")
+            .defaultSuccessUrl("/courses", true)
+            .permitAll();
   }
 }
