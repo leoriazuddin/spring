@@ -32,7 +32,7 @@ Form-based authentication
 - change from default login page: `loginPage` in Config class
     - add thymeleaf dependency, `TemplateController`, `login_form.html`
     - default successUrl in `Config` class
+    - See `JSESSIONID` in Chrome -> Inspect -> Application -> Cookies
     
-
 Reference
 - https://www.youtube.com/watch?v=her_7pa0vrg

@@ -17,4 +17,9 @@ public class TemplateController {
     public String getCourses() {
         return "courses";
     }
+
+    @GetMapping("logout")
+    public String logout() {
+        return "logout";
+    }
 }
