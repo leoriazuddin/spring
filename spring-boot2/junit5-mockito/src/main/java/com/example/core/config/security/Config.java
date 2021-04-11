@@ -1,5 +1,6 @@
 package com.example.core.config.security;
 
+import com.example.core.jwt.JwtAuthenticationFilter;
 import com.example.core.service.ApplicationUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,19 +34,19 @@ public class Config extends WebSecurityConfigurerAdapter {
     this.applicationUserService = applicationUserService;
   }
 
-//  commented due to switch to daoAuthenticationProvider
-//  @Override
-//  @Bean
-//  protected UserDetailsService userDetailsService() {
-//    String pwdRiaz = passwordEncoder.encode("pass");
-//    String pwdMd = passwordEncoder.encode("pass123");
-//
-//    UserDetails student = createUser(pwdRiaz, "riaz", STUDENT.getGrantedAuthorities());
-//    UserDetails admin = createUser(pwdMd, "md", ADMIN.getGrantedAuthorities());
-//    UserDetails adminTrainee =
-//            createUser(pwdMd, "adminTrainee", ADMIN_TRAINEE.getGrantedAuthorities());
-//    return new InMemoryUserDetailsManager(student, admin, adminTrainee);
-//  }
+  //  commented due to switch to daoAuthenticationProvider
+  //  @Override
+  //  @Bean
+  //  protected UserDetailsService userDetailsService() {
+  //    String pwdRiaz = passwordEncoder.encode("pass");
+  //    String pwdMd = passwordEncoder.encode("pass123");
+  //
+  //    UserDetails student = createUser(pwdRiaz, "riaz", STUDENT.getGrantedAuthorities());
+  //    UserDetails admin = createUser(pwdMd, "md", ADMIN.getGrantedAuthorities());
+  //    UserDetails adminTrainee =
+  //            createUser(pwdMd, "adminTrainee", ADMIN_TRAINEE.getGrantedAuthorities());
+  //    return new InMemoryUserDetailsManager(student, admin, adminTrainee);
+  //  }
 
   @Bean
   public DaoAuthenticationProvider daoAuthenticationProvider() {
@@ -71,24 +73,44 @@ public class Config extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http
-            .csrf()
-            .disable()
-//            .csrf()
-//              .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
-            .authorizeRequests()
+    csrf(http);
+    authentication(http);
+  }
+
+  private void authentication(HttpSecurity http) throws Exception {
+    permissionBasedAccess(http);
+    //    formBasedLogin(http);
+    jwt(http);
+  }
+
+  private void jwt(HttpSecurity http) throws Exception {
+    http.sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .addFilter(new JwtAuthenticationFilter(authenticationManager()));
+  }
+
+  private void permissionBasedAccess(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
             .antMatchers("/")
             .permitAll()
-            .antMatchers("/api/**").hasRole(STUDENT.name())
-//            .antMatchers(HttpMethod.DELETE, "/management/api/**").hasAuthority(Permissions.COURSE_WRITE.getPermission())
-//            .antMatchers(HttpMethod.PUT, "/management/api/**").hasAuthority(Permissions.COURSE_WRITE.getPermission())
-//            .antMatchers(HttpMethod.POST, "/management/api/**").hasAuthority(Permissions.COURSE_WRITE.getPermission())
-//            .antMatchers(HttpMethod.GET, "/management/api/**").hasAnyRole(ADMIN.name(), ADMIN_TRAINEE.name())
+            .antMatchers("/api/**")
+            .hasRole(STUDENT.name())
+            //            .antMatchers(HttpMethod.DELETE,
+            // "/management/api/**").hasAuthority(Permissions.COURSE_WRITE.getPermission())
+            //            .antMatchers(HttpMethod.PUT,
+            // "/management/api/**").hasAuthority(Permissions.COURSE_WRITE.getPermission())
+            //            .antMatchers(HttpMethod.POST,
+            // "/management/api/**").hasAuthority(Permissions.COURSE_WRITE.getPermission())
+            //            .antMatchers(HttpMethod.GET, "/management/api/**").hasAnyRole(ADMIN.name(),
+            // ADMIN_TRAINEE.name())
             .anyRequest()
-            .authenticated()
-            .and()
-//            .httpBasic();
-            .formLogin()
+            .authenticated();
+    //            .httpBasic();
+  }
+
+  private void formBasedLogin(HttpSecurity http) throws Exception {
+    http.formLogin()
             .permitAll()
             .loginPage("/login")
             .defaultSuccessUrl("/courses", true)
@@ -99,5 +121,11 @@ public class Config extends WebSecurityConfigurerAdapter {
             .invalidateHttpSession(true)
             .deleteCookies("JSESSIONID", "remember-me")
             .logoutSuccessUrl("/login");
+  }
+
+  private void csrf(HttpSecurity http) throws Exception {
+    http.csrf().disable();
+    //            .csrf()
+    //              .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
   }
 }

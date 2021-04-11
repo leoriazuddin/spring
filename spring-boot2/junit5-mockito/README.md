@@ -33,6 +33,10 @@ Form-based authentication
     - add thymeleaf dependency, `TemplateController`, `login_form.html`
     - default successUrl in `Config` class
     - See `JSESSIONID` in Chrome -> Inspect -> Application -> Cookies
-    
+
+JWT
+- Added dependency jjwt
+- Token generation, see `JwtAuthenticationFilter`
+    - see `Config.jwt` method
 Reference
 - https://www.youtube.com/watch?v=her_7pa0vrg
